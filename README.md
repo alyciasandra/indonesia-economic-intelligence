@@ -1,8 +1,4 @@
-# indonesia-economic-intelligence
-Indonesia Economic Intelligence Dashboard: Analisis kondisi ekonomi Indonesia berbasis empat jenis data menggunakan Python, AI, dan visualisasi interaktif.
-
-
-# INDONESIA ECONOMIC INTELLIGENCE DASHBOARD
+# PROJECCT INDONESIA ECONOMIC INTELLIGENCE DASHBOARD
 1. Farrel Eksa Althof Syauqi (12010223140014)
 2. Nayla Raihanda Bimanthoro (12010223140005)
 3. Alcia Sandra Elgina Lumban Batu (12010223140004)
