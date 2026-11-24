@@ -1,38 +1,58 @@
-
 import os
 import requests
-import json
 
 API_KEY = os.getenv("BPS_API_KEY")
 
 if not API_KEY:
-    raise ValueError("BPS_API_KEY belum tersedia.")
+    raise ValueError("API Key belum tersedia.")
 
-# Domain 0000 = nasional
 url = (
     "https://webapi.bps.go.id/v1/api/"
-    "list/model/subject/lang/ind/"
-    "domain/0000/"
-    "key/" + API_KEY
+    "list/model/subject/lang/ind/key/"
+    + API_KEY
 )
 
-try:
-    response = requests.get(url, timeout=30)
+response = requests.get(url, timeout=30)
+response.raise_for_status()
 
-    print("HTTP STATUS:", response.status_code)
+result = response.json()
 
-    if response.status_code != 200:
-        print("Pesan dari server BPS:")
-        print(response.text[:2000])
-    else:
-        result = response.json()
+print("STATUS:", result.get("status"))
+print("\nSUBJEK STATISTIK TERKAIT EKONOMI\n")
 
-        print("Koneksi katalog BPS berhasil!")
-        print(json.dumps(
-            result,
-            indent=2,
-            ensure_ascii=False
-        )[:10000])
+# Mengambil daftar subjek
+records = result.get("data", [])
 
-except requests.exceptions.RequestException as error:
-    print("Terjadi masalah koneksi:", type(error).__name__)
+subjects = []
+
+for group in records:
+    if isinstance(group, list):
+        subjects.extend(group)
+
+keywords = [
+    "ekonomi",
+    "keuangan",
+    "perdagangan",
+    "industri",
+    "pertanian",
+    "tenaga kerja",
+    "pengeluaran"
+]
+
+found = 0
+
+for item in subjects:
+    title = str(item.get("title", ""))
+    subcat = str(item.get("subcat", ""))
+
+    if any(k in (title + " " + subcat).lower()
+           for k in keywords):
+
+        print(
+            "ID:", item.get("sub_id"),
+            "| Subjek:", title,
+            "| Kategori:", subcat
+        )
+        found += 1
+
+print("\nJumlah subjek relevan:", found)
