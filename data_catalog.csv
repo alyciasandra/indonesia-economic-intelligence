@@ -1,0 +1,6 @@
+source_id,source_name,variable,unit,frequency,period,status
+D01,BPS,PDB Growth,Percent,Quarterly,2021-2025,Planned
+D02,BPS,Inflation,Percent,Monthly,2021-2025,Planned
+D03,BPS,Unemployment,Percent,Semiannual,2021-2025,Planned
+D04,Bank Indonesia,BI Rate,Percent,Monthly,2021-2025,Planned
+D05,Bank Indonesia,Exchange Rate,IDR per USD,Daily,2021-2025,Planned
