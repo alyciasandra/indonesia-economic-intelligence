@@ -1,37 +1,38 @@
+
 import os
 import requests
 
-# 1. Membaca API Key
 API_KEY = os.getenv("BPS_API_KEY")
 
 if not API_KEY:
-    raise ValueError("API Key belum tersedia!")
+    raise ValueError("API Key belum tersedia.")
 
-# 2. Endpoint katalog subjek BPS
-url = "https://webapi.bps.go.id/v1/api/list/model/subject/lang/ind/key/" + API_KEY
+# Endpoint katalog subjek BPS untuk wilayah nasional
+base_url = "https://webapi.bps.go.id/v1/api/list/model/subject/domain/0000/key/"
 
-# 3. Mengirim permintaan
-print("Menghubungkan ke BPS...")
+url = base_url + API_KEY
+
+print("Menghubungkan ke katalog BPS...")
 
 try:
-    response = requests.get(url, timeout=30)
+    response = requests.get(
+        url,
+        params={"lang": "ind", "page": 1},
+        timeout=30
+    )
 
     print("HTTP STATUS:", response.status_code)
 
-    if response.status_code == 200:
+    if response.status_code != 200:
+        print("Pesan server:", response.text[:2000])
+    else:
         result = response.json()
 
-        print("\nKoneksi berhasil!")
+        print("\nKoneksi katalog berhasil!")
         print("Status:", result.get("status"))
 
-        records = result.get("data", [])
-        subjects = []
-
-        for group in records:
-            if isinstance(group, list):
-                subjects.extend(group)
-
-        print("\nDAFTAR SUBJEK EKONOMI:")
+        data = result.get("data", [])
+        subjects = data[1] if len(data) > 1 else []
 
         keywords = [
             "ekonomi",
@@ -43,27 +44,18 @@ try:
             "pengeluaran"
         ]
 
-        found = 0
+        print("\nSUBJEK TERKAIT EKONOMI:")
 
         for item in subjects:
             title = str(item.get("title", ""))
             subcat = str(item.get("subcat", ""))
 
-            if any(k in (title + " " + subcat).lower()
-                   for k in keywords):
-
+            if any(word in (title + " " + subcat).lower()
+                   for word in keywords):
                 print(
-                    "ID:", item.get("sub_id"),
-                    "| Subjek:", title,
-                    "| Kategori:", subcat
+                    f"ID: {item.get('sub_id')} | "
+                    f"{title} | {subcat}"
                 )
-                found += 1
-
-        print("\nJumlah subjek relevan:", found)
-
-    else:
-        print("\nPermintaan ditolak oleh server BPS.")
-        print("Pesan server:", response.text[:1500])
 
 except requests.exceptions.RequestException as error:
     print("Kesalahan koneksi:", type(error).__name__)
